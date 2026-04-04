@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 知識庫聊天系統</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; }
+    h1 { text-align: center; color: #333; }
+    input, button, textarea { width: 100%; margin: 8px 0; padding: 10px; font-size: 1em; }
+    button { background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+    button:hover { background-color: #45a049; }
+    #response { white-space: pre-wrap; background: #f3f3f3; padding: 10px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+
+  <h1>AI 知識庫聊天系統</h1>
+
+  <!-- 上傳 PDF -->
+  <label>上傳 PDF：</label>
+  <input type="file" id="fileInput">
+  <button onclick="uploadFile()">上傳檔案</button>
+  <div id="uploadMessage"></div>
+
+  <hr>
+
+  <!-- 問問題 -->
+  <label>輸入問題：</label>
+  <textarea id="queryInput" rows="3"></textarea>
+  <button onclick="askQuestion()">送出問題</button>
+  <div id="response"></div>
+
+  <script>
+    const API_URL = "http://127.0.0.1:8000";
+
+    // 🔹 上傳 PDF
+    async function uploadFile() {
+      const fileInput = document.getElementById('fileInput');
+      if (!fileInput.files.length) {
+        alert("請先選擇檔案");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+
+      try {
+        const res = await fetch(`${API_URL}/upload`, {
+          method: "POST",
+          body: formData
+        });
+        const data = await res.json();
+        document.getElementById('uploadMessage').textContent = data.message || data.error;
+      } catch (err) {
+        console.error(err);
+        document.getElementById('uploadMessage').textContent = "上傳失敗";
+      }
+    }
+
+    // 🔹 問問題
+    async function askQuestion() {
+      const query = document.getElementById('queryInput').value.trim();
+      if (!query) {
+        alert("請輸入問題");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_URL}/ask?query=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        document.getElementById('response').textContent = data.answer || data.error;
+      } catch (err) {
+        console.error(err);
+        document.getElementById('response').textContent = "查詢失敗";
+      }
+    }
+  </script>
+
+</body>
+</html>

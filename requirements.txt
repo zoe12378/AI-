@@ -1,0 +1,9 @@
+fastapi==0.111.0
+uvicorn==0.23.2
+langchain-community==0.0.223
+langchain-text-splitters==0.1.12
+chromadb==0.4.8
+huggingface-hub==0.16.4
+transformers==4.35.0
+ollama==0.0.9
+python-multipart==0.0.6
